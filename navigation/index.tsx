@@ -19,13 +19,31 @@ import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
+
+interface AppContextInterface {
+  name: string;
+  author: string;
+  url: string;
+}
+
+export const AppCtx = React.createContext<AppContextInterface | null>(null);
+
+
+const sampleAppContext: AppContextInterface = {
+  name: "Using React Context in a Typescript App",
+  author: "thehappybug",
+  url: "http://www.example.com",
+};
+
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <RootNavigator />
-    </NavigationContainer>
+    <AppCtx.Provider value={sampleAppContext}>
+      <NavigationContainer
+        linking={LinkingConfiguration}
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <RootNavigator />
+      </NavigationContainer>
+    </AppCtx.Provider>
   );
 }
 
@@ -41,7 +59,7 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="Modal" component={ModalScreen}  />
       </Stack.Group>
     </Stack.Navigator>
   );

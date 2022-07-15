@@ -16,34 +16,19 @@ import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
+import { StockProvider } from '../navigation/Context';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
-
-interface AppContextInterface {
-  name: string;
-  author: string;
-  url: string;
-}
-
-export const AppCtx = React.createContext<AppContextInterface | null>(null);
-
-
-const sampleAppContext: AppContextInterface = {
-  name: "Using React Context in a Typescript App",
-  author: "thehappybug",
-  url: "http://www.example.com",
-};
-
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
-    <AppCtx.Provider value={sampleAppContext}>
+    <StockProvider>
       <NavigationContainer
         linking={LinkingConfiguration}
         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RootNavigator />
       </NavigationContainer>
-    </AppCtx.Provider>
+    </StockProvider>
   );
 }
 

@@ -3,7 +3,32 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import * as React from 'react';
-export default function React.CreateContext({
-    data: 'test'
-})
+ import { createContext, useState, FC } from "react";
+
+// Provider in your app
+interface IStockContext {
+    ticker: String | null;
+    setTicker?: (tick:string) => void;
+  }
+  
+  export const StockContext = createContext<IStockContext>({ticker: null});
+
+export const StockProvider: FC = ({ children }) => {
+    const [ticker, setTicker] = useState<String | null>(null);
+  
+    const toggleTicker = (tick:string) => {
+        console.log('hi')
+      setTicker(tick);
+    };
+  
+    return (
+      <StockContext.Provider
+        value={{
+          ticker,
+          setTicker: toggleTicker,
+        }}
+      >
+        {children}
+      </StockContext.Provider>
+    );
+  };

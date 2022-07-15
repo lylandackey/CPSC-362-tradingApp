@@ -2,12 +2,12 @@ import { useEffect, useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet } from 'react-native';
 
-import AppCtx from '../navigation/index';
+import { StockContext } from '../navigation/Context';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 export default function ModalScreen() {
-    const appContext = useContext(AppCtx);
+    const appContext = useContext(StockContext);
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
 
@@ -34,17 +34,36 @@ export default function ModalScreen() {
       loadResourcesAndDataAsync();
     }, []);
 
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/ModalScreen.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-    </View>
-  );
+    try {
+      // try something exceptional here
+      return (
+        <View style={styles.container}>
+          <Text style={styles.title}>Modal</Text>
+          <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+          <EditScreenInfo path="/screens/ModalScreen.tsx" />
+    
+          <Text style={styles.title}> Ticker: {appContext.ticker}</Text>
+          
+          {/* Use a light status bar on iOS to account for the black space above the modal */}
+          <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        </View>
+      )
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+  
+      return (
+        <View style={styles.container}>
+          <Text style={styles.title}>Modal</Text>
+          <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+          <EditScreenInfo path="/screens/ModalScreen.tsx" />
+    
+          {/* Use a light status bar on iOS to account for the black space above the modal */}
+          <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        </View>
+      )
+    };
 }
 
 const styles = StyleSheet.create({

@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, View, StyleSheet, Button } from 'react-native';
+import { useEffect, useState, useContext } from 'react';
+import { ActivityIndicator, FlatList, Text, View, StyleSheet, Button, Alert } from 'react-native';
+
+import { StockContext } from '../navigation/Context';
+import DOWJSON from '../DOW.json';
 
 export default function useFetchDowJonesStocks() {
+  const { ticker, setTicker } = useContext(StockContext);
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
 
@@ -30,11 +34,11 @@ export default function useFetchDowJonesStocks() {
 
         
         <FlatList
-          data={data}
-          keyExtractor={({ id }, index) => id}
+          data={DOWJSON}
+          keyExtractor={({ symbol }, index) => symbol}
           renderItem={({ item }) => (
             
-            <View>
+            <View key="{item.symbol}" style={styles.getCardListContainer}>
               <View style={styles.getCardList}>
                 <View style={styles.getCard}>
         
@@ -51,19 +55,15 @@ export default function useFetchDowJonesStocks() {
                       darkColor="rgba(255,255,255,0.8)">
                       {item.name} 
                     </Text>
-        
-                    <Text
-                      style={styles.getStockPrice}
-                      lightColor="rgba(0,0,0,0.8)"
-                      darkColor="rgba(255,255,255,0.8)">
-                      {item.sector}
-                    </Text>
                   </View>
                   <Button
-                  title=">"
+                    title=">"
                     style={styles.getStockPrice}
                     lightColor="rgba(0,0,0,0.8)"
-                    darkColor="rgba(255,255,255,0.8)">
+                    darkColor="rgba(255,255,255,0.8)"
+                    onPress={() => {
+                      setTicker(item.symbol);
+                    }}>
                     
                   </Button>
                 </View>
@@ -77,8 +77,11 @@ export default function useFetchDowJonesStocks() {
 }
 
 const styles = StyleSheet.create({
+  getCardListContainer: {
+    width: "100%"
+  },
   getCardList: {
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
     backgroundColor: 'white'
   },
   getCard: {

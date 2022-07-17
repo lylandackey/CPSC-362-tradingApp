@@ -2,12 +2,15 @@ import { useEffect, useState, useContext } from 'react';
 import { ActivityIndicator, FlatList, Text, View, StyleSheet, Button, Alert } from 'react-native';
 
 import { StockContext } from '../navigation/Context';
+import { RootTabScreenProps } from '../types';
 import DOWJSON from '../DOW.json';
+import { useNavigation } from '@react-navigation/native';
 
-export default function useFetchDowJonesStocks() {
+export default function useFetchDowJonesStocks( ) {
   const { ticker, setTicker } = useContext(StockContext);
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
+    const navigation = useNavigation<RootTabScreenProps<'TabOne'>>();
 
     // const [ctx, TextProvider] = createCtx("someText");
   // Load any resources or data that we need prior to rendering the app
@@ -35,6 +38,7 @@ export default function useFetchDowJonesStocks() {
         
         <FlatList
           data={DOWJSON}
+          style={styles.getCardFlatList}
           keyExtractor={({ symbol }, index) => symbol}
           renderItem={({ item }) => (
             
@@ -63,6 +67,7 @@ export default function useFetchDowJonesStocks() {
                     darkColor="rgba(255,255,255,0.8)"
                     onPress={() => {
                       setTicker(item.symbol);
+                        navigation.navigate('Modal');
                     }}>
                     
                   </Button>
@@ -77,19 +82,24 @@ export default function useFetchDowJonesStocks() {
 }
 
 const styles = StyleSheet.create({
+  getCardFlatList: {
+    width: "100%"
+  },
   getCardListContainer: {
     width: "100%"
   },
   getCardList: {
-    // marginHorizontal: 10,
     backgroundColor: 'white'
   },
   getCard: {
-    marginHorizontal: 10,
-    borderColor: 'black',
-    borderWidth: 5,
+    marginHorizontal: 4,
+    borderColor: 'navy',
+    borderWidth: 2,
+    marginVertical: 5,
+    borderRadius: 2,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    width: 300
   },
   getCardText: {
     alignItems: 'flex-start'
@@ -97,6 +107,7 @@ const styles = StyleSheet.create({
   getCardTitle: {
     color: 'black',
     fontSize: 10,
+    width: 100
   },
   getStockName: {
     color: 'black',

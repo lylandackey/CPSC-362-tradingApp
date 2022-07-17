@@ -17,7 +17,6 @@ export const StockProvider: FC = ({ children }) => {
     const [ticker, setTicker] = useState<String | null>(null);
   
     const toggleTicker = (tick:string) => {
-        console.log('hi')
       setTicker(tick);
     };
   
@@ -25,7 +24,7 @@ export const StockProvider: FC = ({ children }) => {
       <StockContext.Provider
         value={{
           ticker,
-          setTicker: toggleTicker,
+          setTicker: toggleTicker
         }}
       >
         {children}

@@ -10,20 +10,27 @@ export default function ModalScreen() {
     const appContext = useContext(StockContext);
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-
     // Load any resources or data that we need prior to rendering the app
     useEffect(() => {
       const loadResourcesAndDataAsync = async () => {
           try {
-            
-              // const responsePrice = await fetch(`https://financialmodelingprep.com/api/v3/historical-chart/1min/{stockSymbol}?apikey=7aadf56a06dc47a397e3645e01931d99`)
-              // const jsonPrice = await responsePrice.json();
-              // const responsePriceTarget = await fetch(`https://financialmodelingprep.com/api/v4/price-target-consensus?symbol={stockSymbol}&apikey=7aadf56a06dc47a397e3645e01931d99`)
-              // const jsonPriceTarget = await responsePriceTarget.json();
-              // const responseMetrics = await fetch(`https://financialmodelingprep.com/api/v3/key-metrics-ttm/{stockSymbol}?limit=40&apikey=7aadf56a06dc47a397e3645e01931d99`)
-              // const jsonMetrics = await responseMetrics.json();
+            if (appContext.ticker) {
+              const responsePrice = await fetch('https://financialmodelingprep.com/api/v3/historical-price-full/' + appContext.ticker + '?apikey=7aadf56a06dc47a397e3645e01931d99')
+              const jsonPrice = await responsePrice.json();
+              const PriceTargetUrl = "https://finnhub.io/api/v1/stock/recommendation?symbol=" + appContext.ticker + "&token=cb9mdj2ad3i97kdr02o0";
+              const responsePriceTarget = await fetch(PriceTargetUrl, {
+                headers: {
+                  'Accept': 'application/json',  // It can be used to overcome cors errors
+                  'Content-Type': 'application/json; charset=utf-8'
+                },
+              })
+              const jsonPriceTarget = await responsePriceTarget.json();
+              const responseMetrics = await fetch('https://financialmodelingprep.com/api/v3/key-metrics-ttm/' + appContext.ticker + '?limit=40&apikey=7aadf56a06dc47a397e3645e01931d99')
+              const jsonMetrics = await responseMetrics.json();
               
-              // setData({...jsonPrice[0], ...jsonPriceTarget[0], ...jsonMetrics[0] });
+              setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
+              console.log(data)
+            }
           }
           catch (error) {
               console.error(error);
@@ -38,12 +45,27 @@ export default function ModalScreen() {
       // try something exceptional here
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>Modal</Text>
+          <Text style={styles.title}>Stock Details</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          <EditScreenInfo path="/screens/ModalScreen.tsx" />
+          {/* <EditScreenInfo path="/screens/ModalScreen.tsx" /> */}
     
           <Text style={styles.title}> Ticker: {appContext.ticker}</Text>
+          <Text style={styles.title}>  Open: {data.open}</Text>
+          <Text style={styles.title}> Close: {data.close}</Text>
+          <Text style={styles.title}> High: {data.high}</Text>
+          <Text style={styles.title}> Low {data.low}</Text>
           
+          <Text style={styles.title}> Volume {data.volume}</Text>
+          <Text style={styles.title}> PE ratio: {data.peRatioTTM}</Text>
+          <Text style={styles.title}> EPS: {data.netIncomePerShareTTM}</Text>
+          <Text style={styles.analystTitle}> Analyst's recommendations as of : {data.recommendations[0].period}</Text>
+          <View style={styles.analystContainer}>
+            <Text style={styles.title}> Strong Buy: {data.recommendations[0].strongBuy}</Text>
+            <Text style={styles.title}> Buy: {data.recommendations[0].buy}</Text>
+            <Text style={styles.title}> Hold: {data.recommendations[0].hold}</Text>
+            <Text style={styles.title}> Sell: {data.recommendations[0].sell}</Text>
+            <Text style={styles.title}> Strong Sell: {data.recommendations[0].strongSell}</Text>
+          </View>
           {/* Use a light status bar on iOS to account for the black space above the modal */}
           <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
         </View>
@@ -65,19 +87,33 @@ export default function ModalScreen() {
       )
     };
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  analystContainer: {
+    backgroundColor: 'gray',
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 10,
+    width: '70%'
+  },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 2
+  },
+  analystTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    marginTop: 20,
+    width: '70%'
   },
   separator: {
-    marginVertical: 30,
+    marginVertical: 10,
     height: 1,
     width: '80%',
   },

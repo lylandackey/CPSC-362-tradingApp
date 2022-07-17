@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import StockCardList from '../components/StockCardList';
+import useFetchDowJonesStocks from '../hooks/useFetchDowJonesStocks';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 
@@ -9,7 +10,7 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
     <View style={styles.container}>
       <Text style={styles.title}>Dow Jones Index</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <StockCardList path="/screens/TabOneScreen.tsx" />
+      { useFetchDowJonesStocks()}
     </View>
   );
 }

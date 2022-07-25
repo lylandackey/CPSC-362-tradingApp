@@ -27,8 +27,11 @@ export default function ModalScreen() {
               // const jsonPriceTarget = await responsePriceTarget.json();
               // const responseMetrics = await fetch('https://financialmodelingprep.com/api/v3/key-metrics-ttm/' + appContext.ticker + '?limit=40&apikey=7aadf56a06dc47a397e3645e01931d99')
               // const jsonMetrics = await responseMetrics.json();
+              const responseYahoo = await fetch('https://query1.finance.yahoo.com/v6/finance/quote?symbols=' + appContext.ticker);
+              const jsonYahoo = await responseYahoo.json();
               
               // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
+              setData({ ...jsonYahoo.quoteResponse.result[0]});
               console.log(data)
             }
           }
@@ -64,14 +67,21 @@ export default function ModalScreen() {
             
           </Button>
           <Text style={styles.title}> Ticker: {appContext.ticker}</Text>
-          <Text style={styles.title}>  Open: {data.open}</Text>
+          <Text style={styles.title}>  Open: {data.regularMarketOpen}</Text>
+          <Text style={styles.title}> Close: {data.regularMarketPreviousClose}</Text>
+          <Text style={styles.title}> High: {data.regularMarketDayHigh}</Text>
+          <Text style={styles.title}> Low: {data.regularMarketDayLow}</Text> 
+          <Text style={styles.title}> Volume: {data.regularMarketVolume}</Text>
+          <Text style={styles.title}> PE ratio: {data.trailingPE}</Text>
+          <Text style={styles.title}> EPS: {data.epsTrailingTwelveMonths}</Text>
+          {/* <Text style={styles.title}>  Open: {data.open}</Text>
           <Text style={styles.title}> Close: {data.close}</Text>
           <Text style={styles.title}> High: {data.high}</Text>
-          <Text style={styles.title}> Low {data.low}</Text>
+          <Text style={styles.title}> Low {data.low}</Text> */}
           
-          <Text style={styles.title}> Volume {data.volume}</Text>
-          <Text style={styles.title}> PE ratio: {data.peRatioTTM}</Text>
-          <Text style={styles.title}> EPS: {data.netIncomePerShareTTM}</Text>
+          {/* <Text style={styles.title}> Volume {data.volume}</Text> */}
+          {/* <Text style={styles.title}> PE ratio: {data.peRatioTTM}</Text>
+          <Text style={styles.title}> EPS: {data.netIncomePerShareTTM}</Text> */}
           {/* <Text style={styles.analystTitle}> Analyst's recommendations as of : {data?.recommendations[0].period}</Text>
           <View style={styles.analystContainer}>
             <Text style={styles.title}> Strong Buy: {data?.recommendations[0].strongBuy}</Text>

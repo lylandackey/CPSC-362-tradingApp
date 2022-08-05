@@ -4,6 +4,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "watch": "nodemon server/app.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -13,6 +14,7 @@
   "jest": {
     "preset": "jest-expo"
   },
+  "type": "module",
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
@@ -36,10 +38,20 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@plotex/render-dom": "^1.0.21",
+    "@plotex/render-image": "^1.0.21",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.66.13",
+    "data-forge": "^1.9.6",
+    "data-forge-fs": "^0.0.9",
+    "data-forge-indicators": "^0.2.7",
+    "data-forge-plot": "^1.0.2",
+    "easy-table": "^1.2.0",
+    "express": "^4.18.1",
+    "grademark": "^0.2.9",
     "jest": "^26.6.3",
     "jest-expo": "~45.0.0",
+    "nodemon": "^2.0.19",
     "react-test-renderer": "17.0.2",
     "typescript": "~4.3.5"
   },

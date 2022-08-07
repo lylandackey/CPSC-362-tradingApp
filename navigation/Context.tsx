@@ -9,21 +9,21 @@
 interface IStockContext {
     ticker: String | null;
     setTicker?: (tick:string) => void;
-    user: { username:String, password:String, email:String, currentCash:String, watchList:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null };
-    setUser?: (user:{ username:String, password:String, email:String, currentCash:String, watchList:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null }) => void;
+    user: { username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null };
+    setUser?: (user:{ username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null }) => void;
   }
   
-  export const StockContext = createContext<IStockContext>({ticker: null, user: {username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0", watchList:[], currentStocks:null}});
+  export const StockContext = createContext<IStockContext>({ticker: null, user: {username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0", watchList50Day:[], watchList200Day:[], currentStocks:null}});
 
 export const StockProvider: FC = ({ children }) => {
     const [ticker, setTicker] = useState<String | null>(null);
-    const [user, setUser] = useState<{username:String, password:String, email:String, currentCash:String, watchList:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null} >({username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0", watchList:[], currentStocks:null});
+    const [user, setUser] = useState<{username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null} >({username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0",  watchList50Day:[], watchList200Day:[], currentStocks:null});
   
     const toggleTicker = (tick:string) => {
       setTicker(tick);
     };
   
-    const updateUser = (user:{ username:String, password:String, email:String, currentCash:String, watchList:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String}  }) => {
+    const updateUser = (user:{ username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String}  }) => {
       setUser(user);
     };
   

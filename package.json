@@ -38,7 +38,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@plotex/render-dom": "^1.0.21",
     "@plotex/render-image": "^1.0.21",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.66.13",

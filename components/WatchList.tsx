@@ -8,12 +8,13 @@ import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 import { StockContext } from '../navigation/Context';
 
-export default function WatchList() {
+export default function WatchList(props) {
     const { user, setUser } = useContext(StockContext);
     console.log('user', user)
+    console.log('type', props)
     return (
       <View style={styles.getCardList}>
-        {user?.watchList.length > 0 ? user?.watchList.map(stock => {
+        {props.list.length > 0 ? props.list.map(stock => {
             return (
                 <View style={styles.getCard} key={stock}>
                     <View>
@@ -42,12 +43,12 @@ export default function WatchList() {
                         lightColor="rgba(0,0,0,0.8)"
                         darkColor="rgba(255,255,255,0.8)"
                         onPress={() => {
-                          let watchList = user?.watchList;
+                          let watchList = props?.list;
                           watchList = watchList.filter((symbol) => {
                             if (stock == symbol) return false;
                             return true;
                           });
-                          setUser({...user, watchList: watchList});
+                          setUser({...user, [props.type]: watchList});
                         }}>
                         <Text style={styles.getRemoveButtonText} lightColor={Colors.light.tint}>
                             Remove from watch list

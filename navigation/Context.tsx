@@ -5,15 +5,30 @@
  */
  import { createContext, useState, FC } from "react";
 
+//**Strategy**
+//Ticker is context for the stock ticker symbol shared between screens and the stock detail modal
 // Provider in your app
 interface IStockContext {
-    ticker: String | null;
-    setTicker?: (tick:string) => void;
-    user: { username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null };
-    setUser?: (user:{ username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null }) => void;
-  }
+  ticker: String | null;
+  setTicker?: (tick:string) => void;
+  user: { 
+    username:String, 
+    password:String, 
+    email:String, 
+    currentCash:String, 
+    watchList50Day:String[], 
+    watchList200Day:String[], 
+    currentStocks:{
+      ticker: String, 
+      datesTraded: String[], 
+      averagePrice: String, 
+      numberOfShares: String
+    } | null 
+  };
+  setUser?: (user:{ username:String, password:String, email:String, currentCash:String, watchList50Day:String[], watchList200Day:String[], currentStocks:{ticker: String, datesTraded: String[], averagePrice: String, numberOfShares: String} | null }) => void;
+}
   
-  export const StockContext = createContext<IStockContext>({ticker: null, user: {username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0", watchList50Day:[], watchList200Day:[], currentStocks:null}});
+export const StockContext = createContext<IStockContext>({ticker: null, user: {username:"anonymous", password:"anonymous", email:"anonymous", currentCash: "$0", watchList50Day:[], watchList200Day:[], currentStocks:null}});
 
 export const StockProvider: FC = ({ children }) => {
     const [ticker, setTicker] = useState<String | null>(null);

@@ -17,6 +17,9 @@ export function getBacktest(req, res, next) {
     let typeDayCount = parseInt(type.substring(0, type.indexOf('DayMoving')));
     let inputSeries;
 
+    //**Adapter**
+    //Needed because data for 1 year is from 2 different websites
+    //therefore formatted differently
     if (ticker === 'AAPL' || ticker === 'AMGN' || ticker === 'AXP' || ticker === 'BA' || ticker === 'WBA' ) {
         inputSeries = dataForge.readFileSync("server/stockTables/" + ticker + ".csv")     // Read input file.
         .parseCSV()
@@ -116,7 +119,7 @@ export function getBacktest(req, res, next) {
     // plotting(dataFrame);
     // dataFrame.plot(equityCurve, { chartType: "area", y: { label: "Equity $" }})
     //         .renderImage(equityCurveOutputFilePath);
-    
+
     let resObj = {};
     resObj[typeString] = analysis;
     res.set('Access-Control-Allow-Origin', '*');

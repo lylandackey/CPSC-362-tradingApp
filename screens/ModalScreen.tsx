@@ -6,6 +6,8 @@ import { StockContext } from '../navigation/Context';
 import { Text, View } from '../components/Themed';
 
 export default function ModalScreen() {
+    //*Strategy*
+    //The modal can read that context and use it
     const appContext = useContext(StockContext);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdvancedLoading, setIsAdvancedLoading] = useState(true);
@@ -86,7 +88,6 @@ export default function ModalScreen() {
                 <TouchableOpacity 
                     style={styles.buyButton}
                     onPress={() => {
-                      console.log('appContext.user,', appContext.user)
                       let watchList = appContext.user?.watchList200Day;
                       if (watchList.indexOf(appContext.ticker) == -1) {
                         watchList.push(appContext.ticker);

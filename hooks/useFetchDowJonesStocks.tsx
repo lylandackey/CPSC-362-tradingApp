@@ -46,6 +46,8 @@ export default function useFetchDowJonesStocks( ) {
                     lightColor="rgba(0,0,0,0.8)"
                     darkColor="rgba(255,255,255,0.8)"
                     onPress={() => {
+                      //*Strategy*
+                      //By setting the context ticker from the main screen
                       setTicker(item.symbol);
                       navigation.navigate('Modal');
                     }}>

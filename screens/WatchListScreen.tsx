@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   watchListContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    width: '80%',
   },
   title: {
     fontSize: 20,

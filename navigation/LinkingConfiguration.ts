@@ -24,12 +24,7 @@ const linking: LinkingOptions<RootStackParamList> = {
             screens: {
               WatchListScreen: 'two',
             },
-          },
-          YourPortfolio: {
-            screens: {
-              YourPorfolioScreen: 'three',
-            },
-          },
+          }
         },
       },
       Modal: 'modal',

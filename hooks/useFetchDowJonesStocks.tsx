@@ -99,10 +99,11 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: 300
+    width: 300,
   },
   getCardText: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    padding: 3
   },
   getCardTitle: {
     color: 'black',
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   getStockPrice: {
     color: 'black',
-    fontSize: 10
+    fontSize: 20,
   },
   homeScreenFilename: {
     marginVertical: 7,

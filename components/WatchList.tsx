@@ -7,64 +7,70 @@ import Colors from '../constants/Colors';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 import { StockContext } from '../navigation/Context';
+import { RootTabScreenProps } from '../types';
+import { useNavigation } from '@react-navigation/native';
 
 export default function WatchList(props) {
-    const { user, setUser } = useContext(StockContext);
+    const { user, setUser, ticker, setTicker } = useContext(StockContext);
     console.log('user', user)
     console.log('type', props)
+    const navigation = useNavigation<RootTabScreenProps<'WatchList'>>();
     return (
-      <View style={styles.getCardList}>
-        {props.list.length > 0 ? props.list.map(stock => {
-            return (
-                <View style={styles.getCard} key={stock}>
-                    <View>
-                        <Text
-                            style={styles.getStockTicker}
-                            lightColor="rgba(0,0,0,0.8)"
-                            darkColor="rgba(255,255,255,0.8)">
-                            {stock}
-                        </Text>
-                        <Text
-                            style={styles.getStockName}
-                            lightColor="rgba(0,0,0,0.8)"
-                            darkColor="rgba(255,255,255,0.8)">
-                            Tesla 
-                        </Text>
-                    </View>
-      
-                    <Text
-                        style={styles.getStockPrice}
-                        lightColor="rgba(0,0,0,0.8)"
-                        darkColor="rgba(255,255,255,0.8)">
-                        $750.00
-                    </Text>
+      <View style={styles.getWatchList}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{props.type.replace(/([A-Z1-9])/g, " $1").charAt(0).toUpperCase() + props.type.replace(/([A-Z1-9])/g, " $1").slice(1)}</Text>
+        </View>
+
+        <View style={styles.getCardList}>
+          {props.list.length > 0 ? props.list.map(stock => {
+              return (
+                  <View style={styles.getCard} key={stock}>
                     <TouchableOpacity
-                        style={styles.getRemoveButton}
+                        style={styles.getModalButton}
                         lightColor="rgba(0,0,0,0.8)"
                         darkColor="rgba(255,255,255,0.8)"
                         onPress={() => {
-                          let watchList = props?.list;
-                          watchList = watchList.filter((symbol) => {
-                            if (stock == symbol) return false;
-                            return true;
-                          });
-                          setUser({...user, [props.type]: watchList});
+                          setTicker(stock);
+                          navigation.navigate('Modal');
                         }}>
-                        <Text style={styles.getRemoveButtonText} lightColor={Colors.light.tint}>
-                            Remove from watch list
-                        </Text>
-                    </TouchableOpacity>
-                    
-              </View>
-            )
-        }) : (
-          <Text
-              style={styles.getNothing}
-              lightColor="rgba(0,0,0,0.8)"
-              darkColor="rgba(255,255,255,0.8)">
-              Nothing on Your WatchList
-          </Text>
-        )}
+                        <View style={styles.getCardText}>
+                            <Text
+                                style={styles.getStockTicker}
+                                lightColor="rgba(0,0,0,0.8)"
+                                darkColor="rgba(255,255,255,0.8)">
+                                {stock}
+                            </Text>
+                        </View>
+                      </TouchableOpacity>
+        
+                      <TouchableOpacity
+                          style={styles.getRemoveButton}
+                          lightColor="rgba(0,0,0,0.8)"
+                          darkColor="rgba(255,255,255,0.8)"
+                          onPress={() => {
+                            let watchList = props?.list;
+                            watchList = watchList.filter((symbol) => {
+                              if (stock == symbol) return false;
+                              return true;
+                            });
+                            setUser({...user, [props.type]: watchList});
+                          }}>
+                          <Text style={styles.getRemoveButtonText} lightColor={Colors.light.tint}>
+                              X
+                          </Text>
+                      </TouchableOpacity>
+                      
+                </View>
+              )
+          }) : (
+            <Text
+                style={styles.getNothing}
+                lightColor="rgba(0,0,0,0.8)"
+                darkColor="rgba(255,255,255,0.8)">
+                Nothing on Your WatchList
+            </Text>
+          )}
+        </View>
       </View>
     );
 
@@ -77,17 +83,38 @@ function handleRemoveFromWatchList(user, setUser, ticker:String) {
 }
 
 const styles = StyleSheet.create({
+  getWatchList: {
+    flexDirection: 'column',
+    width: '50%'
+  },
   getNothing: {
-    color: 'white'
+    color: 'black',
+    textAlign: 'center'
+  },
+  titleContainer: {
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
   getCardList: {
     marginHorizontal: 50
   },
   getCard: {
-    marginHorizontal: 50,
+    textAlign: 'left',
+    // marginHorizontal: 50,
     borderColor: 'black',
-    borderWidth: 5,
-    backgroundColor: 'white'
+    borderWidth: 2,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  getCardText: {
+    marginHorizontal: 10,
+    marginVerical: 10
   },
   getCardTitle: {
     color: 'black',
@@ -95,7 +122,7 @@ const styles = StyleSheet.create({
   },
   getStockName: {
     color: 'white',
-    fontSize: 10
+    fontSize: 10,
   },
   getStockPrice: {
     color: 'white',
@@ -103,8 +130,10 @@ const styles = StyleSheet.create({
   },
   getRemoveButton: {
     backgroundColor: 'red',
-    borderRadius: 3,
-    paddingHorizontal: 4,
+    // borderRadius: 3,
+    paddingHorizontal: 6,
+    height: '100%',
+    justifyContent: 'center'
   },
   getRemoveButtonText: {
     color: 'white',

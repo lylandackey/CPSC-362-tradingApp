@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 import { StockContext } from '../navigation/Context';
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -28,25 +28,21 @@ export default function ModalScreen() {
               // const jsonPriceTarget = await responsePriceTarget.json();
               // const responseMetrics = await fetch('https://financialmodelingprep.com/api/v3/key-metrics-ttm/' + appContext.ticker + '?limit=40&apikey=7aadf56a06dc47a397e3645e01931d99')
               // const jsonMetrics = await responseMetrics.json();
-              const responseYahoo = await fetch('https://query1.finance.yahoo.com/v6/finance/quote?symbols=' + appContext.ticker);
+              let headers = {
+                // "Access-Control-Allow-Origin": "http://localhost:19006"
+              }
+              const responseYahoo = await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + appContext.ticker, {
+                // method : "GET",
+                mode: 'no-cors',
+                // headers: headers
+              });
+              console.log("responseYahoo",responseYahoo)
               const jsonYahoo = await responseYahoo.json();
               
+            console.log("jsonYahoo",jsonYahoo)
               // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
               setData({ ...jsonYahoo.quoteResponse.result[0]});
               setIsLoading(false);
-
-              const responseLocal50 = await fetch('https://localhost:5000/backtest/50DayMovingAverage/' + appContext.ticker);
-              const jsonLocal50 = await responseLocal50.json();
-
-              const responseLocal200 = await fetch('https://localhost:5000/backtest/200DayMovingAverage/' + appContext.ticker);
-              const jsonLocal200 = await responseLocal200.json();
-              
-              // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
-              setData({ ...jsonLocal50 , ...jsonLocal200 });
-              setIsAdvancedLoading(false);
-              console.log('jsonLocal50', jsonLocal50);
-              console.log('jsonLocal200', jsonLocal200);
-              console.log(data)
             }
           }
           catch (error) {
@@ -54,6 +50,30 @@ export default function ModalScreen() {
           }
       }
       loadResourcesAndDataAsync();
+
+      
+      const loadAnalysisAsync = async () => {
+        try {
+          if (appContext.ticker) {
+            const responseLocal50 = await fetch('http://localhost:5000/backtest/50DayMovingAverage/' + appContext.ticker);
+            const jsonLocal50 = await responseLocal50.json();
+
+            const responseLocal200 = await fetch('http://localhost:5000/backtest/200DayMovingAverage/' + appContext.ticker);
+            const jsonLocal200 = await responseLocal200.json();
+            
+            // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
+            setData({ ...jsonLocal50 , ...jsonLocal200 });
+            setIsAdvancedLoading(false);
+            console.log('jsonLocal50', jsonLocal50);
+            console.log('jsonLocal200', jsonLocal200);
+            console.log(data)
+          }
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    loadAnalysisAsync();
 
 
     }, [isLoading, isAdvancedLoading])
@@ -81,13 +101,19 @@ export default function ModalScreen() {
             
           </Button> */}
           <Text style={styles.title}> Ticker: {appContext.ticker}</Text>
-          <Text style={styles.title}>  Open: {data.regularMarketOpen}</Text>
-          <Text style={styles.title}> Close: {data.regularMarketPreviousClose}</Text>
-          <Text style={styles.title}> High: {data.regularMarketDayHigh}</Text>
-          <Text style={styles.title}> Low: {data.regularMarketDayLow}</Text> 
-          <Text style={styles.title}> Volume: {data.regularMarketVolume}</Text>
-          <Text style={styles.title}> PE ratio: {data.trailingPE}</Text>
-          <Text style={styles.title}> EPS: {data.epsTrailingTwelveMonths}</Text>
+          <View style={styles.basicStatContainer}>
+            <View>
+              <Text style={styles.title}>  Open: {data.regularMarketOpen}</Text>
+              <Text style={styles.title}> Close: {data.regularMarketPreviousClose}</Text>
+              <Text style={styles.title}> High: {data.regularMarketDayHigh}</Text>
+              <Text style={styles.title}> Low: {data.regularMarketDayLow}</Text> 
+            </View>
+            <View>
+              <Text style={styles.title}> Volume: {data.regularMarketVolume}</Text>
+              <Text style={styles.title}> PE ratio: {data.trailingPE}</Text>
+              <Text style={styles.title}> EPS: {data.epsTrailingTwelveMonths}</Text>
+            </View>
+          </View>
           {/* <Text style={styles.title}>  Open: {data.open}</Text>
           <Text style={styles.title}> Close: {data.close}</Text>
           <Text style={styles.title}> High: {data.high}</Text>
@@ -108,25 +134,34 @@ export default function ModalScreen() {
             <Text style={styles.title}> Buy/Sell Stratagies </Text>
             <Text style={styles.title}> 200-day moving average strategy </Text>
 
-            <View style={styles.stratagyContainer}>
-              <Text>Annualized  return: {data.analysis200DayMovingAverage.profit/data.analysis200DayMovingAverage.startingCapital * 100}%</Text>
-              <Text>% profitability: {data.analysis200DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
-              <Text>Win/Loss ratio: {data.analysis200DayMovingAverage.profitFactor}</Text>
-              <Text>Average Profit per Trade: {data.analysis200DayMovingAverage.averageProfitPerTrade}</Text>
-            </View>
-            
-            <TouchableOpacity 
-                style={styles.buyButton}
-                onPress={() => {
-                  console.log('appContext.user,', appContext.user)
-                  let watchList = appContext.user?.watchList200Day;
-                  if (watchList.indexOf(appContext.ticker) == -1) {
-                    watchList.push(appContext.ticker);
-                    appContext.setUser({...appContext.user, watchList200Day: watchList});
-                  }
-                }}> 
-                <Text>Add to watchlist</Text>  
-            </TouchableOpacity>
+            {data.analysis200DayMovingAverage ?
+              <>
+              <View style={styles.analystContainer}>
+                <Text>Annualized  return: {data?.analysis200DayMovingAverage.profit/data?.analysis200DayMovingAverage.startingCapital * 100}%</Text>
+                <Text>% profitability: {data?.analysis200DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
+                <Text>Win/Loss ratio: {data?.analysis200DayMovingAverage.profitFactor}</Text>
+                <Text>Average Profit per Trade: {data?.analysis200DayMovingAverage.averageProfitPerTrade}</Text>
+              </View>
+              
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                  style={styles.buyButton}
+                  onPress={() => {
+                    console.log('appContext.user,', appContext.user)
+                    let watchList = appContext.user?.watchList200Day;
+                    if (watchList.indexOf(appContext.ticker) == -1) {
+                      watchList.push(appContext.ticker);
+                      appContext.setUser({...appContext.user, watchList200Day: watchList});
+                    }
+                  }}> 
+                  <Text>Add to watchlist</Text>  
+              </TouchableOpacity></View>
+              </>
+            : 
+
+            <ActivityIndicator size="large" color="#00ff00" />
+            }
 
             {/* <Text style={styles.title}> 200-day moving average strategy </Text>
             {data.twoHundredDayAverageChange < 0 ? (
@@ -166,13 +201,16 @@ export default function ModalScreen() {
             
             <Text style={styles.title}> 50-day moving average strategy </Text>
             
-            <View style={styles.stratagyContainer}>
-              <Text>Annualized  return: {data.analysis50DayMovingAverage.profit/data.analysis50DayMovingAverage.startingCapital * 100}%</Text>
-              <Text>% profitability: {data.analysis50DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
-              <Text>Win/Loss ratio: {data.analysis50DayMovingAverage.profitFactor}</Text>
-              <Text>Average Profit per Trade: {data.analysis50DayMovingAverage.averageProfitPerTrade}</Text>
+            {data.analysis50DayMovingAverage ?
+              <>
+            <View style={styles.analystContainer}>
+              <Text>Annualized  return: {data?.analysis50DayMovingAverage.profit/data?.analysis50DayMovingAverage.startingCapital * 100}%</Text>
+              <Text>% profitability: {data?.analysis50DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
+              <Text>Win/Loss ratio: {data?.analysis50DayMovingAverage.profitFactor}</Text>
+              <Text>Average Profit per Trade: {data?.analysis50DayMovingAverage.averageProfitPerTrade}</Text>
             </View>
 
+            <View style={styles.buttonContainer}>
             <TouchableOpacity 
                 style={styles.buyButton}
                 onPress={() => {
@@ -183,7 +221,11 @@ export default function ModalScreen() {
                   }
                 }}> 
                 <Text>Add to watchlist</Text>  
-            </TouchableOpacity>
+            </TouchableOpacity></View></>
+            : 
+
+            <ActivityIndicator size="large" color="#00ff00" />
+            }
 
           </View>
           {/* Use a light status bar on iOS to account for the black space above the modal */}
@@ -214,18 +256,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stratagyContainer: {
-    backgroundColor: 'gray',
-    padding: 10,
+    backgroundColor: 'lightgray',
+    padding: 20,
+    paddingVertical: 30,
     marginTop: 10,
     borderRadius: 10,
     width: '70%'
   },
   analystContainer: {
-    backgroundColor: 'gray',
+    backgroundColor: 'lightgray',
     padding: 10,
-    marginTop: 10,
     borderRadius: 10,
     width: '70%'
+  },
+  basicStatContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '70%',
+    marginVertical: 10,
+    textAlign: 'left'
+  },
+  buttonContainer: {
+    backgroundColor: 'lightgray',
+    flexDirection: 'row',
+    marginBottom: 30
   },
   buyButton: {
     fontSize: 16,
@@ -233,7 +288,8 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     backgroundColor: 'green',
     paddingVertical: 10,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    borderRadius: 10,
   },
   sellButton: {
     fontSize: 16,

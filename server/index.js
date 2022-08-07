@@ -13,6 +13,8 @@ import moment from 'moment';
 
 export function getBacktest(req, res, next) {
     let ticker = req.params.ticker;
+    let type = req.params.type;
+    let typeDayCount = parseInt(type.substring(0, type.indexOf('DayMoving')));
     console.log('req.param', req.params)
     console.log('hi', ticker)
     let inputSeries = dataForge.readFileSync("server/stockTables/" + ticker + ".csv")     // Read input file.
@@ -26,11 +28,11 @@ export function getBacktest(req, res, next) {
 
     const movingAverage = inputSeries
         .deflate(bar => bar.close)          // Extract closing price series.
-        .sma(30);                           // 30 day moving average.
+        .sma(typeDayCount);                           // typeDayCount day moving average.
 
     inputSeries = inputSeries
         .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
-        .skip(30)                           // Skip blank sma entries.
+        .skip(typeDayCount)                           // Skip blank sma entries.
 
     const strategy = {
         entryRule: (enterPosition, args) => {
@@ -81,6 +83,7 @@ export function getBacktest(req, res, next) {
     const analysisOutputFilePath = "server/output/analysis.txt";
     fs.writeFileSync(analysisOutputFilePath, analysisOutput);
     console.log(">> " + analysisOutputFilePath);
+    let typeString = type + 'analysis';
 
     console.log("Plotting...");
     const plotting = async (dataFrame) => {
@@ -112,5 +115,5 @@ export function getBacktest(req, res, next) {
     // plotting(dataFrame);
     // dataFrame.plot(equityCurve, { chartType: "area", y: { label: "Equity $" }})
     //         .renderImage(equityCurveOutputFilePath);
-    res.status(200).json({error : "good"});
+    res.status(200).json({ typeString: analysis });
 }

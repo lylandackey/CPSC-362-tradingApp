@@ -4,7 +4,7 @@ import { getBacktest } from '../index.js';
 
 const router = express.Router();
 
-router.get('/backtest/:ticker', getBacktest);
+router.get('/backtest/:type/:ticker', getBacktest);
 
 const hello = function(req, res, next) {
     let ticker = req.params.ticker;

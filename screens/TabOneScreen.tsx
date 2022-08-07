@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-import StockCardList from '../components/StockCardList';
 import useFetchDowJonesStocks from '../hooks/useFetchDowJonesStocks';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';

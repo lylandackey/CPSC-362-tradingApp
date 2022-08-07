@@ -2,9 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useContext } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import useFetchDowJonesStocks from '../hooks/useFetchDowJonesStocks';
 import Colors from '../constants/Colors';
-import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 import { StockContext } from '../navigation/Context';
 import { RootTabScreenProps } from '../types';
@@ -12,8 +10,6 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function WatchList(props) {
     const { user, setUser, ticker, setTicker } = useContext(StockContext);
-    console.log('user', user)
-    console.log('type', props)
     const navigation = useNavigation<RootTabScreenProps<'WatchList'>>();
     return (
       <View style={styles.getWatchList}>
@@ -76,12 +72,6 @@ export default function WatchList(props) {
 
 }
 
-function handleRemoveFromWatchList(user, setUser, ticker:String) {
-  let watchList = user?.watchList;
-  watchList.slice(user?.watchList.indexOf(ticker), user?.watchList.indexOf(ticker)+1);
-    setUser({...user, watchList: watchList});
-}
-
 const styles = StyleSheet.create({
   getWatchList: {
     flexDirection: 'column',
@@ -104,7 +94,6 @@ const styles = StyleSheet.create({
   },
   getCard: {
     textAlign: 'left',
-    // marginHorizontal: 50,
     borderColor: 'black',
     borderWidth: 2,
     backgroundColor: 'white',
@@ -130,7 +119,6 @@ const styles = StyleSheet.create({
   },
   getRemoveButton: {
     backgroundColor: 'red',
-    // borderRadius: 3,
     paddingHorizontal: 6,
     height: '100%',
     justifyContent: 'center'

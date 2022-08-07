@@ -14,3 +14,4 @@ web-build/
 .DS_Store
 
 server/output/*
+!server/output/test.csv

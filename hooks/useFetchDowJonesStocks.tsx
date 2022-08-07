@@ -8,28 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function useFetchDowJonesStocks( ) {
   const { ticker, setTicker } = useContext(StockContext);
-    const [isLoading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
+    const [isLoading, setLoading] = useState(false);
     const navigation = useNavigation<RootTabScreenProps<'TabOne'>>();
-
-    // const [ctx, TextProvider] = createCtx("someText");
-  // Load any resources or data that we need prior to rendering the app
-  useEffect(() => {
-    const loadResourcesAndDataAsync = async () => {
-        try {
-            // const response = await fetch(`https://financialmodelingprep.com/api/v3/dowjones_constituent?apikey=7aadf56a06dc47a397e3645e01931d99`)
-            // const json = await response.json();
-            // setData(json);
-        }
-        catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    loadResourcesAndDataAsync();
-  }, []);
-
 
   return (
     <View style={{ flex: 1, padding: 12 }}>
@@ -67,7 +47,7 @@ export default function useFetchDowJonesStocks( ) {
                     darkColor="rgba(255,255,255,0.8)"
                     onPress={() => {
                       setTicker(item.symbol);
-                        navigation.navigate('Modal');
+                      navigation.navigate('Modal');
                     }}>
                     
                   </Button>

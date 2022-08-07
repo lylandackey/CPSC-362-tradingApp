@@ -1,9 +1,10 @@
 {
-  "name": "awesomeproject",
+  "name": "cpsc362tradingapp",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "dev": "concurrently \"npm run start\" \"npm run watch\"",
     "watch": "nodemon server/app.mjs",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -14,11 +15,14 @@
   "jest": {
     "preset": "jest-expo"
   },
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
+    "concurrently": "^7.3.0",
+    "cors": "^2.8.5",
     "expo": "~45.0.0",
     "expo-asset": "~8.5.0",
     "expo-constants": "~13.1.1",
@@ -49,6 +53,7 @@
     "grademark": "^0.2.9",
     "jest": "^26.6.3",
     "jest-expo": "~45.0.0",
+    "node-fetch": "^3.2.10",
     "nodemon": "^2.0.19",
     "react-test-renderer": "17.0.2",
     "typescript": "~4.3.5"

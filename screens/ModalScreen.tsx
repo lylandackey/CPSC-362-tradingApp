@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, Platform, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 import { StockContext } from '../navigation/Context';
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 export default function ModalScreen() {
@@ -16,33 +15,28 @@ export default function ModalScreen() {
       const loadResourcesAndDataAsync = async () => {
           try {
             if (appContext.ticker) {
-              // const responsePrice = await fetch('https://financialmodelingprep.com/api/v3/historical-price-full/' + appContext.ticker + '?apikey=7aadf56a06dc47a397e3645e01931d99')
-              // const jsonPrice = await responsePrice.json();
-              // const PriceTargetUrl = "https://finnhub.io/api/v1/stock/recommendation?symbol=" + appContext.ticker + "&token=cb9mdj2ad3i97kdr02o0";
-              // const responsePriceTarget = await fetch(PriceTargetUrl, {
-              //   headers: {
-              //     'Accept': 'application/json',  // It can be used to overcome cors errors
-              //     'Content-Type': 'application/json; charset=utf-8'
-              //   },
-              // })
-              // const jsonPriceTarget = await responsePriceTarget.json();
-              // const responseMetrics = await fetch('https://financialmodelingprep.com/api/v3/key-metrics-ttm/' + appContext.ticker + '?limit=40&apikey=7aadf56a06dc47a397e3645e01931d99')
-              // const jsonMetrics = await responseMetrics.json();
               let headers = {
-                // "Access-Control-Allow-Origin": "http://localhost:19006"
+                "Access-Control-Allow-Origin": "*",
+                "accepts":"application/json"
               }
-              const responseYahoo = await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + appContext.ticker, {
-                // method : "GET",
-                mode: 'no-cors',
-                // headers: headers
+              const responseYahoo = await fetch('http://localhost:5000/yahoo/' + appContext.ticker, {
+                headers: headers
               });
-              console.log("responseYahoo",responseYahoo)
               const jsonYahoo = await responseYahoo.json();
-              
-            console.log("jsonYahoo",jsonYahoo)
-              // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
-              setData({ ...jsonYahoo.quoteResponse.result[0]});
+
+              const responseLocal50 = await fetch('http://localhost:5000/backtest/50DayMovingAverage/' + appContext.ticker);
+              const jsonLocal50 = await responseLocal50.json();
+
+              const responseLocal200 = await fetch('http://localhost:5000/backtest/200DayMovingAverage/' + appContext.ticker);
+              const jsonLocal200 = await responseLocal200.json();
+            
+              setData({  
+                ...jsonLocal50 , 
+                ...jsonLocal200, 
+                ...jsonYahoo.quoteResponse.result[0]
+              });
               setIsLoading(false);
+              setIsAdvancedLoading(false);
             }
           }
           catch (error) {
@@ -50,31 +44,6 @@ export default function ModalScreen() {
           }
       }
       loadResourcesAndDataAsync();
-
-      
-      const loadAnalysisAsync = async () => {
-        try {
-          if (appContext.ticker) {
-            const responseLocal50 = await fetch('http://localhost:5000/backtest/50DayMovingAverage/' + appContext.ticker);
-            const jsonLocal50 = await responseLocal50.json();
-
-            const responseLocal200 = await fetch('http://localhost:5000/backtest/200DayMovingAverage/' + appContext.ticker);
-            const jsonLocal200 = await responseLocal200.json();
-            
-            // setData({ ...jsonPrice.historical[0], recommendations: jsonPriceTarget, ...jsonMetrics[0] });
-            setData({ ...jsonLocal50 , ...jsonLocal200 });
-            setIsAdvancedLoading(false);
-            console.log('jsonLocal50', jsonLocal50);
-            console.log('jsonLocal200', jsonLocal200);
-            console.log(data)
-          }
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
-    loadAnalysisAsync();
-
 
     }, [isLoading, isAdvancedLoading])
 
@@ -84,22 +53,7 @@ export default function ModalScreen() {
         <View style={styles.container}>
           <Text style={styles.title}>Stock Details</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          {/* <EditScreenInfo path="/screens/ModalScreen.tsx" /> */}
-    
-          {/* <Button
-            title="*Add To Watchlist*"
-            style={styles.title}
-            lightColor="rgba(0,0,0,0.8)"
-            darkColor="rgba(255,255,255,0.8)"
-            onPress={() => {
-              let watchList = appContext.user?.watchList;
-              if (watchList.indexOf(appContext.ticker) == -1) {
-                watchList.push(appContext.ticker);
-                appContext.setUser({...appContext.user, watchList: watchList});
-              }
-            }}>
-            
-          </Button> */}
+
           <Text style={styles.title}> Ticker: {appContext.ticker}</Text>
           <View style={styles.basicStatContainer}>
             <View>
@@ -114,22 +68,7 @@ export default function ModalScreen() {
               <Text style={styles.title}> EPS: {data.epsTrailingTwelveMonths}</Text>
             </View>
           </View>
-          {/* <Text style={styles.title}>  Open: {data.open}</Text>
-          <Text style={styles.title}> Close: {data.close}</Text>
-          <Text style={styles.title}> High: {data.high}</Text>
-          <Text style={styles.title}> Low {data.low}</Text> */}
-          
-          {/* <Text style={styles.title}> Volume {data.volume}</Text> */}
-          {/* <Text style={styles.title}> PE ratio: {data.peRatioTTM}</Text>
-          <Text style={styles.title}> EPS: {data.netIncomePerShareTTM}</Text> */}
-          {/* <Text style={styles.analystTitle}> Analyst's recommendations as of : {data?.recommendations[0].period}</Text>
-          <View style={styles.analystContainer}>
-            <Text style={styles.title}> Strong Buy: {data?.recommendations[0].strongBuy}</Text>
-            <Text style={styles.title}> Buy: {data?.recommendations[0].buy}</Text>
-            <Text style={styles.title}> Hold: {data?.recommendations[0].hold}</Text>
-            <Text style={styles.title}> Sell: {data?.recommendations[0].sell}</Text>
-            <Text style={styles.title}> Strong Sell: {data?.recommendations[0].strongSell}</Text>
-          </View> */}
+
           <View style={styles.stratagyContainer}>
             <Text style={styles.title}> Buy/Sell Stratagies </Text>
             <Text style={styles.title}> 200-day moving average strategy </Text>
@@ -142,89 +81,54 @@ export default function ModalScreen() {
                 <Text>Win/Loss ratio: {data?.analysis200DayMovingAverage.profitFactor}</Text>
                 <Text>Average Profit per Trade: {data?.analysis200DayMovingAverage.averageProfitPerTrade}</Text>
               </View>
-              
 
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity 
-                  style={styles.buyButton}
-                  onPress={() => {
-                    console.log('appContext.user,', appContext.user)
-                    let watchList = appContext.user?.watchList200Day;
-                    if (watchList.indexOf(appContext.ticker) == -1) {
-                      watchList.push(appContext.ticker);
-                      appContext.setUser({...appContext.user, watchList200Day: watchList});
-                    }
-                  }}> 
-                  <Text>Add to watchlist</Text>  
-              </TouchableOpacity></View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                    style={styles.buyButton}
+                    onPress={() => {
+                      console.log('appContext.user,', appContext.user)
+                      let watchList = appContext.user?.watchList200Day;
+                      if (watchList.indexOf(appContext.ticker) == -1) {
+                        watchList.push(appContext.ticker);
+                        appContext.setUser({...appContext.user, watchList200Day: watchList});
+                      }
+                    }}> 
+                    <Text>Add to watchlist</Text>  
+                </TouchableOpacity>
+              </View>
               </>
             : 
 
             <ActivityIndicator size="large" color="#00ff00" />
             }
 
-            {/* <Text style={styles.title}> 200-day moving average strategy </Text>
-            {data.twoHundredDayAverageChange < 0 ? (
-                <View style={styles.stratagyItemContainer}>
-                  <TouchableOpacity style={styles.sellButton}>
-                    <Text>Spinner</Text>   
-                  </TouchableOpacity>
-                </View>
-            ) : (
-              <TouchableOpacity style={styles.sellButton}>
-                <Text>Spinner</Text>   
-              </TouchableOpacity>
-            ) }
-            <View style={styles.stratagyContainer}>
-
-            </View>
-            {data.twoHundredDayAverageChange < 0 ? (
-              <TouchableOpacity 
-                style={styles.buyButton}
-                onPress={() => {
-                  console.log('appContext.user,', appContext.user)
-                  let watchList = appContext.user?.watchList200Day;
-                  if (watchList.indexOf(appContext.ticker) == -1) {
-                    watchList.push(appContext.ticker);
-                    appContext.setUser({...appContext.user, watchList200Day: watchList});
-                  }
-                }}> 
-                <Text>Use this strategy</Text>  
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.sellButton}>
-                <Text>Sell</Text>   
-              </TouchableOpacity>
-            ) }
-            
-            <Text style={styles.title}> mean reversion strategy </Text> */}
-            
             <Text style={styles.title}> 50-day moving average strategy </Text>
             
             {data.analysis50DayMovingAverage ?
               <>
-            <View style={styles.analystContainer}>
-              <Text>Annualized  return: {data?.analysis50DayMovingAverage.profit/data?.analysis50DayMovingAverage.startingCapital * 100}%</Text>
-              <Text>% profitability: {data?.analysis50DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
-              <Text>Win/Loss ratio: {data?.analysis50DayMovingAverage.profitFactor}</Text>
-              <Text>Average Profit per Trade: {data?.analysis50DayMovingAverage.averageProfitPerTrade}</Text>
-            </View>
+              <View style={styles.analystContainer}>
+                <Text>Annualized  return: {data?.analysis50DayMovingAverage.profit/data?.analysis50DayMovingAverage.startingCapital * 100}%</Text>
+                <Text>% profitability: {data?.analysis50DayMovingAverage.percentProfitable.toFixed(2)}%</Text>
+                <Text>Win/Loss ratio: {data?.analysis50DayMovingAverage.profitFactor}</Text>
+                <Text>Average Profit per Trade: {data?.analysis50DayMovingAverage.averageProfitPerTrade}</Text>
+              </View>
 
-            <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-                style={styles.buyButton}
-                onPress={() => {
-                  let watchList = appContext.user?.watchList50Day;
-                  if (watchList.indexOf(appContext.ticker) == -1) {
-                    watchList.push(appContext.ticker);
-                    appContext.setUser({...appContext.user, watchList50Day: watchList});
-                  }
-                }}> 
-                <Text>Add to watchlist</Text>  
-            </TouchableOpacity></View></>
-            : 
-
-            <ActivityIndicator size="large" color="#00ff00" />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                    style={styles.buyButton}
+                    onPress={() => {
+                      let watchList = appContext.user?.watchList50Day;
+                      if (watchList.indexOf(appContext.ticker) == -1) {
+                        watchList.push(appContext.ticker);
+                        appContext.setUser({...appContext.user, watchList50Day: watchList});
+                      }
+                    }}> 
+                    <Text>Add to watchlist</Text>  
+                </TouchableOpacity>
+              </View>
+              </>
+              : 
+              <ActivityIndicator size="large" color="#00ff00" />
             }
 
           </View>
@@ -241,7 +145,7 @@ export default function ModalScreen() {
         <View style={styles.container}>
           <Text style={styles.title}>Modal</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          <EditScreenInfo path="/screens/ModalScreen.tsx" />
+          <ActivityIndicator size="large" color="#00ff00" />
     
           {/* Use a light status bar on iOS to account for the black space above the modal */}
           <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />

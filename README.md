@@ -7,6 +7,6 @@ To get app up and running please have the following downloaded:
 - android/ios emulator, or have the expo App on your phone
 
 Steps: 
-1. npm i
-2. npm start
+1. npm install
+2. npm run dev
 3. scan QR code or hook up emulator

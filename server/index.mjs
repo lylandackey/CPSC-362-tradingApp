@@ -15,16 +15,24 @@ export function getBacktest(req, res, next) {
     let ticker = req.params.ticker;
     let type = req.params.type;
     let typeDayCount = parseInt(type.substring(0, type.indexOf('DayMoving')));
-    console.log('req.param', req.params)
-    console.log('hi', ticker)
-    let inputSeries = dataForge.readFileSync("server/stockTables/" + ticker + ".csv")     // Read input file.
-    .parseCSV()
-    .parseDates("Date", "YYYY/MM/DD")
-    .dropSeries("Adj Close")               // Don't want column 5.
-    .parseFloats(["Open", "High", "Low", "Close", "Volume"])
-    .setIndex("Date") // Index so we can later merge on date.
-    .renameSeries({ Date: "time",  Open: "open", "High": "high", "Close": "close", "Volume": "volume"});
-    
+    let inputSeries;
+
+    if (ticker === 'AAPL' || ticker === 'AMGN' || ticker === 'AXP' || ticker === 'BA' || ticker === 'WBA' ) {
+        inputSeries = dataForge.readFileSync("server/stockTables/" + ticker + ".csv")     // Read input file.
+        .parseCSV()
+        .parseDates("Date", "YYYY/MM/DD")
+        .dropSeries("Adj Close")               // Don't want column 5.
+        .parseFloats(["Open", "High", "Low", "Close", "Volume"])
+        .setIndex("Date") // Index so we can later merge on date.
+        .renameSeries({ Date: "time",  Open: "open", "High": "high", "Close": "close", "Volume": "volume"});
+    } else {
+        inputSeries = dataForge.readFileSync("server/stockTables/" + ticker + ".csv")     // Read input file.
+        .parseCSV()
+        .parseDates("Date", "MM/DD/YYYY")
+        .parseFloats(["Open", "High", "Low", "Close", "Volume"])
+        .setIndex("Date") // Index so we can later merge on date.
+        .renameSeries({ Date: "time",  Open: "open", "High": "high", "Close": "close", "Volume": "volume"});
+    }
 
     const movingAverage = inputSeries
         .deflate(bar => bar.close)          // Extract closing price series.
@@ -63,12 +71,8 @@ export function getBacktest(req, res, next) {
         .asCSV()
         .writeFileSync("server/output/trades.csv");
 
-        console.log('dataFrame', dataFrame);
-
     const startingCapital = 10000;
     const analysis = analyze(startingCapital, trades);
-    console.log(analysis);
-
 
     const analysisTable = new Table();
 
@@ -79,13 +83,10 @@ export function getBacktest(req, res, next) {
     }
 
     const analysisOutput = analysisTable.toString();
-    console.log(analysisOutput);
     const analysisOutputFilePath = "server/output/analysis.txt";
     fs.writeFileSync(analysisOutputFilePath, analysisOutput);
-    console.log(">> " + analysisOutputFilePath);
     let typeString = 'analysis' + type ;
 
-    console.log("Plotting...");
     const plotting = async (dataFrame) => {
         // Visualize the equity curve and drawdown chart for your backtest:
         // const equityCurve = computeEquityCurve(startingCapital, trades);
@@ -115,7 +116,9 @@ export function getBacktest(req, res, next) {
     // plotting(dataFrame);
     // dataFrame.plot(equityCurve, { chartType: "area", y: { label: "Equity $" }})
     //         .renderImage(equityCurveOutputFilePath);
+    
     let resObj = {};
     resObj[typeString] = analysis;
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(200).json( resObj );
 }

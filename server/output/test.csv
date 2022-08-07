@@ -1,0 +1,2 @@
+direction,entryTime,entryPrice,exitTime,exitPrice,profit,profitPct,growth,riskPct,riskSeries,rmultiple,holdingPeriod,exitReason,stopPrice,stopPriceSeries,profitTarget
+long,2022/06/24,139.899994,2022/08/01,161.009995,21.11000100000001,15.089350897327424,1.1508935089732741,4.9999999999999964,,3.017870179465487,24,exit-rule,132.9049943,,

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getBacktest } from '../index.js';
+import { getBacktest } from '../index.mjs';
 
 const router = express.Router();
 

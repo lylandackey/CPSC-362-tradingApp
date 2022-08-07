@@ -83,7 +83,7 @@ export function getBacktest(req, res, next) {
     const analysisOutputFilePath = "server/output/analysis.txt";
     fs.writeFileSync(analysisOutputFilePath, analysisOutput);
     console.log(">> " + analysisOutputFilePath);
-    let typeString = type + 'analysis';
+    let typeString = 'analysis' + type ;
 
     console.log("Plotting...");
     const plotting = async (dataFrame) => {
@@ -115,5 +115,7 @@ export function getBacktest(req, res, next) {
     // plotting(dataFrame);
     // dataFrame.plot(equityCurve, { chartType: "area", y: { label: "Equity $" }})
     //         .renderImage(equityCurveOutputFilePath);
-    res.status(200).json({ typeString: analysis });
+    let resObj = {};
+    resObj[typeString] = analysis;
+    res.status(200).json( resObj );
 }
